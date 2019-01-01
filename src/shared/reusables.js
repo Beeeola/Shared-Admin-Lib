@@ -86,3 +86,35 @@ export function getTime(date) {
   let dd = new Date(date);
   return format(dd, "h:mm a");
 }
+
+export const SectionListPage = ({
+  data,
+  keyValue = "date",
+  keyIndex = "order",
+  LinkComponent = Link,
+  callback = () => {},
+  Component = ListItem
+}) => {
+  let rows = [];
+  let lastCategory = null;
+  [...data]
+    .sort(
+      (a, b) =>
+        new Date(b[keyValue]).getTime() - new Date(a[keyValue]).getTime()
+    )
+    .forEach((withdrawal, index) => {
+      let date = getDate(withdrawal[keyValue]);
+      if (date !== lastCategory) {
+        rows.push(<ListGroup name={date} key={date} />);
+      }
+      rows.push(
+        <Component
+          key={withdrawal[keyIndex]}
+          {...callback(withdrawal)}
+          Link={LinkComponent}
+        />
+      );
+      lastCategory = date;
+    });
+  return rows;
+};
